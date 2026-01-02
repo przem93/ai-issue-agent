@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  ai-issue-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: ai-issue-agent:dev
+    container_name: ai-issue-agent-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=${PORT}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    env_file:
+      - .env
+    volumes:
+      # Mount source code for hot reload (rw for potential file writes)
+      - ./src:/app/src
+      - ./package.json:/app/package.json:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      # Exclude node_modules from host (use container's node_modules)
+      - /app/node_modules
+    restart: unless-stopped
+    command: bun --watch src/index.ts

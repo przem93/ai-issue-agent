@@ -1,0 +1,48 @@
+{
+  "name": "ai-issue-agent",
+  "version": "1.0.0",
+  "description": "AI agent that analyzes project descriptions and automatically creates actionable tasks in issue trackers.",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "run": "./run.sh run",
+    "dev": "bun --watch src/index.ts",
+    "dev:docker": "./run.sh run",
+    "prod": "./run.sh prod",
+    "start": "bun run src/index.ts",
+    "build": "./run.sh build",
+    "deploy": "./run.sh deploy",
+    "status": "./run.sh status",
+    "logs": "./run.sh logs",
+    "stop": "./run.sh stop",
+    "down": "./run.sh delete",
+    "format": "prettier --write \"src/**/*.{ts,js,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,js,json}\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.3.0",
+    "@nestjs/core": "^10.3.0",
+    "@nestjs/platform-express": "^10.3.0",
+    "dotenv": "^17.2.3",
+    "openai": "^6.15.0",
+    "reflect-metadata": "^0.2.1",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/przem93/ai-issue-agent.git"
+  },
+  "author": "Przemysław Ratajczak (przem93)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/przem93/ai-issue-agent/issues"
+  },
+  "homepage": "https://github.com/przem93/ai-issue-agent#readme"
+}

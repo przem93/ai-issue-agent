@@ -1,0 +1,25 @@
+# Development Dockerfile with hot reload support
+FROM oven/bun:1 AS base
+WORKDIR /app
+
+# Install dependencies
+COPY package.json bun.lockb* ./
+RUN bun install
+
+# Copy source files
+COPY . .
+
+# Install curl for healthchecks
+USER root
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Expose port
+EXPOSE 3000
+
+# Set environment to development
+ENV NODE_ENV=development
+
+# Run with watch mode (will be overridden by docker-compose command)
+USER bun
+CMD ["bun", "--watch", "src/index.ts"]
+
