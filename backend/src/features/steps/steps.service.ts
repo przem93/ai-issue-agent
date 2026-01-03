@@ -151,15 +151,53 @@ export class StepsService {
     private completionService: CompletionService,
   ) {}
 
-  async createSteps(projectDescription: string) {
+  async createSteps(
+    projectDescription: string,
+    images: Array<{ base64: string; description: string; filename: string }> = [],
+  ) {
+    // Build user message content
+    const userContent: Array<
+      | { type: 'text'; text: string }
+      | { type: 'image_url'; image_url: { url: string } }
+    > = [];
+
+    // Add text description
+    let textContent = projectDescription;
+
+    // Add image descriptions if provided
+    if (images.length > 0) {
+      const imageDescriptions = images
+        .map((img, index) => {
+          const desc = img.description
+            ? `\n\nImage ${index + 1} (${img.filename}): ${img.description}`
+            : `\n\nImage ${index + 1} (${img.filename})`;
+          return desc;
+        })
+        .join('');
+      textContent += imageDescriptions;
+    }
+
+    userContent.push({ type: 'text', text: textContent });
+
+    // Add images
+    for (const image of images) {
+      userContent.push({
+        type: 'image_url',
+        image_url: { url: image.base64 },
+      });
+    }
+
     const completion = await this.completionService.completion([
       {
-        role: "system",
+        role: 'system',
         content: systemPrompt,
       },
       {
-        role: "user",
-        content: projectDescription,
+        role: 'user',
+        content:
+          userContent.length === 1 && userContent[0].type === 'text'
+            ? userContent[0].text
+            : (userContent as any),
       },
     ]);
 

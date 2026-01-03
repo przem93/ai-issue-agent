@@ -1,18 +1,17 @@
-version: "3.8"
-
 services:
-  ai-issue-agent:
+  backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     image: ai-issue-agent:latest
-    container_name: ai-issue-agent
+    container_name: ai-issue-agent-backend
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - PORT=${PORT}
+      - PORT=${PORT:-3000}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - FRONTEND_URL=http://localhost:80
     env_file:
       - .env
     restart: unless-stopped
@@ -30,3 +29,17 @@ services:
         reservations:
           cpus: "0.1"
           memory: 128M
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: ai-issue-agent-ui:latest
+    container_name: ai-issue-agent-frontend
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    restart: unless-stopped
+    depends_on:
+      - backend

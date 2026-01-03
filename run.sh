@@ -35,6 +35,7 @@ command_exists() {
 # Function to install dependencies
 install_deps() {
     print_info "Installing dependencies..."
+    cd backend
     if command_exists bun; then
         bun install
     elif command_exists npm; then
@@ -43,11 +44,13 @@ install_deps() {
         print_error "Neither bun nor npm found. Please install one of them."
         exit 1
     fi
+    cd ..
 }
 
 # Function to run locally (directly on host)
 run_local() {
     print_info "Running application locally..."
+    cd backend
     if command_exists bun; then
         bun run dev
     elif command_exists npm; then
@@ -95,7 +98,7 @@ run_docker() {
 # Function to build Docker image
 build_image() {
     print_info "Building Docker image: ${IMAGE_NAME}"
-    docker build -t ${IMAGE_NAME} .
+    docker build -t ${IMAGE_NAME} ./backend
     print_info "Docker image built successfully!"
 }
 
@@ -263,7 +266,7 @@ show_help() {
 
 # Function to check and install deps if needed
 ensure_deps() {
-    if [ ! -d "node_modules" ]; then
+    if [ ! -d "backend/node_modules" ]; then
         print_info "Dependencies not found. Installing..."
         install_deps
     fi

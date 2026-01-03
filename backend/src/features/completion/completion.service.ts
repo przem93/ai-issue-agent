@@ -5,8 +5,7 @@ import { Injectable } from "@nestjs/common";
 @Injectable()
 export class CompletionService {
   private openai: OpenAI;
-  private jsonMode = false;
-  private model = "gpt-4";
+  private model = "gpt-4o"; // gpt-4o supports vision
 
   constructor() {
     this.openai = new OpenAI({
@@ -14,12 +13,12 @@ export class CompletionService {
     });
   }
 
-  async completion(messages: ChatCompletionMessageParam[]): Promise<ChatCompletion> {
+  async completion(messages: ChatCompletionMessageParam[], jsonMode = false): Promise<ChatCompletion> {
     return await this.openai.chat.completions.create({
       messages,
       model: this.model,
       stream: false,
-      response_format: this.jsonMode ? { type: "json_object" } : { type: "text" }
+      response_format: jsonMode ? { type: "json_object" } : { type: "text" }
     }) as ChatCompletion;
   }
 }

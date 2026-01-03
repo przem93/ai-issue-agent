@@ -1,26 +1,49 @@
-version: "3.8"
-
 services:
-  ai-issue-agent:
+  backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile.dev
     image: ai-issue-agent:dev
-    container_name: ai-issue-agent-dev
+    container_name: ai-issue-agent-backend
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-      - PORT=${PORT}
+      - PORT=${PORT:-3000}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - FRONTEND_URL=http://localhost:5173
     env_file:
       - .env
     volumes:
       # Mount source code for hot reload (rw for potential file writes)
-      - ./src:/app/src
-      - ./package.json:/app/package.json:ro
-      - ./tsconfig.json:/app/tsconfig.json:ro
+      - ./backend/src:/app/src
+      - ./backend/package.json:/app/package.json:ro
+      - ./backend/tsconfig.json:/app/tsconfig.json:ro
       # Exclude node_modules from host (use container's node_modules)
       - /app/node_modules
     restart: unless-stopped
     command: bun --watch src/index.ts
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    image: ai-issue-agent-ui:dev
+    container_name: ai-issue-agent-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    volumes:
+      # Mount source code for hot reload
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./frontend/tsconfig.node.json:/app/tsconfig.node.json
+      - /app/node_modules
+    restart: unless-stopped
+    depends_on:
+      - backend

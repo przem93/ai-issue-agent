@@ -9,6 +9,7 @@ AI Issue Agent is a NestJS-based application that leverages OpenAI's API to anal
 ## Features
 
 - 🤖 **AI-Powered Step Generation**: Uses OpenAI to analyze project descriptions and create implementation steps
+- 🎨 **React UI**: Modern web interface for interacting with the API
 - 🚀 **NestJS Framework**: Built with modern NestJS architecture
 - ⚡ **Bun Runtime**: Fast TypeScript execution with Bun
 - 🐳 **Docker Support**: Full Docker and Docker Compose configuration
@@ -49,10 +50,20 @@ NODE_ENV=development
 
 ### 3. Install dependencies
 
+Backend:
 ```bash
+cd backend
 bun install
 # or
 npm install
+cd ..
+```
+
+Frontend:
+```bash
+cd frontend
+npm install
+cd ..
 ```
 
 ### 4. Run the application
@@ -66,19 +77,40 @@ npm run run
 ```
 
 This will:
-- Build the Docker image (if needed)
-- Start the application with hot reload
-- Make it available at `http://localhost:3000`
+- Build the Docker images (if needed)
+- Start both backend and frontend with hot reload
+- Backend available at `http://localhost:3000`
+- Frontend available at `http://localhost:5173`
 
 **Option 2: Local development (without Docker)**
 
+Backend:
 ```bash
+cd backend
+npm install
 npm run dev
 # or
+bun install
 bun run dev
 ```
 
+Frontend (in separate terminal):
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
 ## Usage
+
+### Web UI
+
+The easiest way to use the application is through the web UI:
+
+1. Start the application with Docker Compose: `npm run run`
+2. Open your browser and navigate to `http://localhost:5173`
+3. Enter your project description in the text area
+4. Click "Generate Steps" to get AI-generated implementation steps
 
 ### API Endpoints
 
@@ -145,20 +177,28 @@ Response:
 
 ```
 ai-issue-agent/
-├── src/
-│   ├── features/          # Feature modules
-│   │   ├── app/          # Main application module
-│   │   ├── completion/   # OpenAI completion service
-│   │   └── steps/        # Steps generation service
-│   ├── connectors/        # External service connectors
-│   │   └── complete/     # OpenAI connector
-│   └── index.ts          # Application entry point
+├── backend/              # Backend application
+│   ├── src/             # Backend source code
+│   │   ├── features/   # Feature modules
+│   │   │   ├── app/    # Main application module
+│   │   │   ├── completion/ # OpenAI completion service
+│   │   │   └── steps/  # Steps generation service
+│   │   ├── connectors/ # External service connectors
+│   │   │   └── complete/ # OpenAI connector
+│   │   └── index.ts    # Application entry point
+│   ├── Dockerfile       # Production Dockerfile
+│   ├── Dockerfile.dev   # Development Dockerfile
+│   ├── package.json    # Backend dependencies
+│   └── tsconfig.json   # TypeScript configuration
+├── frontend/            # React frontend application
+│   ├── src/            # React source code
+│   ├── public/         # Static assets
+│   ├── Dockerfile      # Production Dockerfile
+│   ├── Dockerfile.dev  # Development Dockerfile
+│   └── package.json    # Frontend dependencies
 ├── docker-compose.yml    # Production Docker Compose config
 ├── docker-compose.dev.yml # Development Docker Compose config
-├── Dockerfile            # Production Dockerfile
-├── Dockerfile.dev        # Development Dockerfile
-├── run.sh               # Helper script for running the app
-└── package.json          # Dependencies and scripts
+└── run.sh               # Helper script for running the app
 ```
 
 ## Development
@@ -178,7 +218,7 @@ npm run format
 
 ### Path Aliases
 
-The project uses TypeScript path aliases:
+The backend uses TypeScript path aliases:
 - `@features/*` → `src/features/*`
 - `@connectors/*` → `src/connectors/*`
 
@@ -218,11 +258,20 @@ Uses `docker-compose.yml` with:
 
 ## Environment Variables
 
+### Backend
+
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `OPENAI_API_KEY` | Your OpenAI API key (required) | - |
-| `PORT` | Application port | `3000` |
+| `PORT` | Backend application port | `3000` |
 | `NODE_ENV` | Environment mode | `development` |
+| `FRONTEND_URL` | Frontend URL for CORS | `http://localhost:5173` |
+
+### Frontend
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VITE_API_URL` | Backend API URL | `http://localhost:3000` |
 
 ## Troubleshooting
 

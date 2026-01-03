@@ -12,8 +12,21 @@ export class AppController {
   }
 
   @Post('steps')
-  createSteps(@Body() body: { projectDescription: string }) {
-    return this.stepsService.createSteps(body.projectDescription);
+  createSteps(
+    @Body()
+    body: {
+      projectDescription: string;
+      images?: Array<{
+        base64: string;
+        description: string;
+        filename: string;
+      }>;
+    },
+  ) {
+    return this.stepsService.createSteps(
+      body.projectDescription,
+      body.images || [],
+    );
   }
 
   @Get('health')
