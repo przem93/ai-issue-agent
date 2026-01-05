@@ -142,6 +142,29 @@ Each stage should:
 <final_instruction>
 Respond ONLY with the JSON object defined above.
 </final_instruction>
+
+---
+
+## Output Rules (CRITICAL)
+
+<output_rules>
+- Output MUST be valid JSON
+- Output MUST start with \`{\` as the very first character
+- Output MUST end with \`}\` as the very last character
+- DO NOT wrap the output in \`\`\` or \`\`\`json
+- DO NOT add markdown, headings, or explanations
+- DO NOT add leading or trailing text
+</output_rules>
+
+---
+
+## Hard Output Constraint (DO NOT VIOLATE)
+
+<hard_output_constraint>
+If you include \`\`\`json, \`\`\`, markdown, or any text outside the JSON object,
+the output is considered INVALID.
+Return ONLY the raw JSON object.
+</hard_output_constraint>
 `;
 
 
