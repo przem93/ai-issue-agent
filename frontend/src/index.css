@@ -280,7 +280,8 @@ button:disabled {
   font-size: 1.3rem;
 }
 
-.generate-tickets-button {
+.generate-tickets-button,
+.create-linear-button {
   background: #667eea;
   color: white;
   border: none;
@@ -295,9 +296,18 @@ button:disabled {
   background: #5568d3;
 }
 
-.generate-tickets-button:disabled {
+.generate-tickets-button:disabled,
+.create-linear-button:disabled {
   background: #ccc;
   cursor: not-allowed;
+}
+
+.create-linear-button {
+  background: #28a745;
+}
+
+.create-linear-button:hover:not(:disabled) {
+  background: #218838;
 }
 
 .stage-goal {

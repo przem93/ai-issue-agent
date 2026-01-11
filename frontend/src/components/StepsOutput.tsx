@@ -37,6 +37,8 @@ interface StepsOutputProps {
       }>;
     }
   >;
+  selectedTeamId?: string;
+  selectedProjectId?: string;
   showStages?: boolean;
 }
 
@@ -47,6 +49,8 @@ export const StepsOutput = ({
   onGenerateTickets,
   loadingStageId,
   ticketsByStage,
+  selectedTeamId,
+  selectedProjectId,
   showStages = true,
 }: StepsOutputProps) => {
   const handleCopy = () => {
@@ -79,6 +83,8 @@ export const StepsOutput = ({
           onGenerateTickets={onGenerateTickets}
           loadingStageId={loadingStageId}
           ticketsByStage={ticketsByStage}
+          selectedTeamId={selectedTeamId}
+          selectedProjectId={selectedProjectId}
         />
       ) : (
         <div className="steps-content">

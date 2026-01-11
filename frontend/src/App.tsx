@@ -5,6 +5,7 @@ import { ImageUpload } from './components/ImageUpload';
 import { ProjectDescriptionForm } from './components/ProjectDescriptionForm';
 import { StepsOutput } from './components/StepsOutput';
 import { useImages } from './hooks/useImages';
+import { useLinearResources } from './hooks/useLinearResources';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useSteps } from './hooks/useSteps';
 import { useTickets } from './hooks/useTickets';
@@ -67,6 +68,30 @@ function App() {
     error: ticketsError,
     generateTickets,
   } = useTickets();
+  const {
+    teams,
+    projects,
+    teamsLoading,
+    projectsLoading,
+    teamsError,
+    projectsError,
+    fetchProjects,
+  } = useLinearResources();
+
+  const [selectedTeamId, setSelectedTeamId] = useState<string>('');
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
+
+  // Fetch projects when team is selected
+  useEffect(() => {
+    if (selectedTeamId) {
+      fetchProjects(selectedTeamId);
+      // Reset project selection when team changes
+      setSelectedProjectId('');
+    } else {
+      fetchProjects();
+      setSelectedProjectId('');
+    }
+  }, [selectedTeamId]);
   // Sync ticketsByStage with localStorage
   const [ticketsByStage, setTicketsByStage] = useState<
     Record<string, TicketsResponse>
@@ -202,14 +227,91 @@ function App() {
         )}
 
         {steps && (
-          <StepsOutput
-            steps={steps}
-            projectDescription={projectDescription}
-            images={images}
-            onGenerateTickets={handleGenerateTickets}
-            loadingStageId={ticketsLoading}
-            ticketsByStage={ticketsByStage}
-          />
+          <>
+            <div className="linear-context" style={{ marginBottom: '20px', padding: '20px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+              <h3 style={{ marginBottom: '15px', fontSize: '1.2rem' }}>Linear Context</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <div className="form-group">
+                  <label htmlFor="linear-team">Team *</label>
+                  <select
+                    id="linear-team"
+                    value={selectedTeamId}
+                    onChange={(e) => setSelectedTeamId(e.target.value)}
+                    disabled={teamsLoading}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #e0e0e0',
+                      borderRadius: '6px',
+                      fontSize: '1rem',
+                      fontFamily: 'inherit',
+                      cursor: teamsLoading ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    <option value="">Select a team...</option>
+                    {teams.map((team) => (
+                      <option key={team.id} value={team.id}>
+                        {team.name} ({team.key})
+                      </option>
+                    ))}
+                  </select>
+                  {teamsError && (
+                    <p style={{ color: '#f44336', fontSize: '0.875rem', marginTop: '5px' }}>
+                      {teamsError}
+                    </p>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="linear-project">Project (optional)</label>
+                  <select
+                    id="linear-project"
+                    value={selectedProjectId}
+                    onChange={(e) => setSelectedProjectId(e.target.value)}
+                    disabled={projectsLoading || !selectedTeamId}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #e0e0e0',
+                      borderRadius: '6px',
+                      fontSize: '1rem',
+                      fontFamily: 'inherit',
+                      cursor: projectsLoading || !selectedTeamId ? 'not-allowed' : 'pointer',
+                      opacity: !selectedTeamId ? 0.6 : 1,
+                    }}
+                  >
+                    <option value="">No project (optional)</option>
+                    {projects.map((project) => (
+                      <option key={project.id} value={project.id}>
+                        {project.name}
+                      </option>
+                    ))}
+                  </select>
+                  {projectsError && (
+                    <p style={{ color: '#f44336', fontSize: '0.875rem', marginTop: '5px' }}>
+                      {projectsError}
+                    </p>
+                  )}
+                  {!selectedTeamId && (
+                    <p style={{ color: '#666', fontSize: '0.875rem', marginTop: '5px', fontStyle: 'italic' }}>
+                      Select a team first to load projects
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <StepsOutput
+              steps={steps}
+              projectDescription={projectDescription}
+              images={images}
+              onGenerateTickets={handleGenerateTickets}
+              loadingStageId={ticketsLoading}
+              ticketsByStage={ticketsByStage}
+              selectedTeamId={selectedTeamId}
+              selectedProjectId={selectedProjectId}
+            />
+          </>
         )}
       </main>
     </div>

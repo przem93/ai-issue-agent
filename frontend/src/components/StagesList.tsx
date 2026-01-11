@@ -56,6 +56,8 @@ interface StagesListProps {
       }>;
     }
   >;
+  selectedTeamId?: string;
+  selectedProjectId?: string;
 }
 
 export const StagesList = ({
@@ -65,6 +67,8 @@ export const StagesList = ({
   onGenerateTickets,
   loadingStageId,
   ticketsByStage,
+  selectedTeamId,
+  selectedProjectId,
 }: StagesListProps) => {
   const [stages, setStages] = useState<Stage[]>([]);
 
@@ -107,6 +111,8 @@ export const StagesList = ({
             loading={loadingStageId === stage.stage_id}
             previousStagesTickets={previousStagesTickets}
             hasAllPreviousTickets={hasAllPreviousTickets}
+            selectedTeamId={selectedTeamId}
+            selectedProjectId={selectedProjectId}
             onGenerateTickets={() =>
               onGenerateTickets(projectDescription, stepsJson, stage.stage_id, previousStagesTickets)
             }
