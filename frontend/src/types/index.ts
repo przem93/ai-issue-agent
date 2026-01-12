@@ -17,6 +17,8 @@ export interface StoredData {
     filename: string;
   }>;
   ticketsByStage?: Record<string, TicketsResponse>;
+  selectedTeamId?: string;
+  selectedProjectId?: string;
 }
 
 export interface ImageData {

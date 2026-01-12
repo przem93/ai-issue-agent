@@ -11,6 +11,8 @@ export const useLocalStorage = () => {
   const [ticketsByStage, setTicketsByStage] = useState<
     Record<string, TicketsResponse>
   >({});
+  const [selectedTeamId, setSelectedTeamId] = useState<string>('');
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const isInitialMount = useRef(true);
 
   // Load from localStorage on mount
@@ -40,6 +42,14 @@ export const useLocalStorage = () => {
         if (data.ticketsByStage && typeof data.ticketsByStage === 'object') {
           setTicketsByStage(data.ticketsByStage);
         }
+
+        // Load selected team and project from localStorage
+        if (data.selectedTeamId) {
+          setSelectedTeamId(data.selectedTeamId);
+        }
+        if (data.selectedProjectId) {
+          setSelectedProjectId(data.selectedProjectId);
+        }
       } catch (err) {
         console.error('Failed to load from localStorage:', err);
       }
@@ -59,7 +69,9 @@ export const useLocalStorage = () => {
       projectDescription ||
       steps ||
       images.length > 0 ||
-      Object.keys(ticketsByStage).length > 0
+      Object.keys(ticketsByStage).length > 0 ||
+      selectedTeamId ||
+      selectedProjectId
     ) {
       const saveToStorage = async () => {
         // Convert images to base64 for storage
@@ -101,6 +113,8 @@ export const useLocalStorage = () => {
           steps,
           images: imagesToSave,
           ticketsByStage,
+          selectedTeamId: selectedTeamId || undefined,
+          selectedProjectId: selectedProjectId || undefined,
         };
 
         try {
@@ -113,6 +127,8 @@ export const useLocalStorage = () => {
             steps,
             images: [],
             ticketsByStage,
+            selectedTeamId: selectedTeamId || undefined,
+            selectedProjectId: selectedProjectId || undefined,
           };
           localStorage.setItem(STORAGE_KEY, JSON.stringify(dataWithoutImages));
         }
@@ -120,7 +136,7 @@ export const useLocalStorage = () => {
 
       saveToStorage();
     }
-  }, [projectDescription, steps, images, ticketsByStage]);
+  }, [projectDescription, steps, images, ticketsByStage, selectedTeamId, selectedProjectId]);
 
   const clearStorage = () => {
     // Revoke blob URLs before clearing
@@ -134,6 +150,8 @@ export const useLocalStorage = () => {
     setImages([]);
     setSteps(null);
     setTicketsByStage({});
+    setSelectedTeamId('');
+    setSelectedProjectId('');
   };
 
   return {
@@ -145,6 +163,10 @@ export const useLocalStorage = () => {
     setSteps,
     ticketsByStage,
     setTicketsByStage,
+    selectedTeamId,
+    setSelectedTeamId,
+    selectedProjectId,
+    setSelectedProjectId,
     clearStorage,
   };
 };

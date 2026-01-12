@@ -22,6 +22,10 @@ function App() {
     setSteps,
     ticketsByStage: storedTicketsByStage,
     setTicketsByStage: setStoredTicketsByStage,
+    selectedTeamId: storedSelectedTeamId,
+    setSelectedTeamId: setStoredSelectedTeamId,
+    selectedProjectId: storedSelectedProjectId,
+    setSelectedProjectId: setStoredSelectedProjectId,
     clearStorage: clearLocalStorage,
   } = useLocalStorage();
 
@@ -78,19 +82,18 @@ function App() {
     fetchProjects,
   } = useLinearResources();
 
-  const [selectedTeamId, setSelectedTeamId] = useState<string>('');
-  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
+  // Use team and project from localStorage
+  const selectedTeamId = storedSelectedTeamId;
+  const selectedProjectId = storedSelectedProjectId;
 
   // Fetch projects when team is selected
   useEffect(() => {
     if (selectedTeamId) {
       fetchProjects(selectedTeamId);
-      // Reset project selection when team changes
-      setSelectedProjectId('');
     } else {
       fetchProjects();
-      setSelectedProjectId('');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps adding fetchProjects makes that it rerenders infinitely
   }, [selectedTeamId]);
   // Sync ticketsByStage with localStorage
   const [ticketsByStage, setTicketsByStage] = useState<
@@ -236,7 +239,13 @@ function App() {
                   <select
                     id="linear-team"
                     value={selectedTeamId}
-                    onChange={(e) => setSelectedTeamId(e.target.value)}
+                    onChange={(e) => {
+                      setStoredSelectedTeamId(e.target.value);
+                      // Reset project when team changes
+                      if (e.target.value !== selectedTeamId) {
+                        setStoredSelectedProjectId('');
+                      }
+                    }}
                     disabled={teamsLoading}
                     style={{
                       width: '100%',
@@ -267,7 +276,7 @@ function App() {
                   <select
                     id="linear-project"
                     value={selectedProjectId}
-                    onChange={(e) => setSelectedProjectId(e.target.value)}
+                    onChange={(e) => setStoredSelectedProjectId(e.target.value)}
                     disabled={projectsLoading || !selectedTeamId}
                     style={{
                       width: '100%',
